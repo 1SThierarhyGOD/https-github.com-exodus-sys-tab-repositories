@@ -1,0 +1,38 @@
+﻿@page "/counter-passive"
+@attribute [StreamRendering(true)]
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p>Current count: @CurrentCount</p>
+
+<form method="post" enhance>
+    <input name="@nameof(CurrentCount)" type="hidden" value="@CurrentCount" />
+
+    <ActionButton Name="inc" OnClick="@(() => ChangeCount(1))" class="btn btn-primary" disabled="@inProgress">
+        Increment
+    </ActionButton>
+
+    <ActionButton Name="dec" OnClick="@(() => ChangeCount(-1))" class="btn btn-primary" disabled="@inProgress">
+        Decrement
+    </ActionButton>
+
+    @if (inProgress)
+    {
+        <span class="ml-4 text-black-50">Please wait...</span>
+    }
+</form>
+
+@code {
+    [Parameter, SupplyParameterFromForm] public int CurrentCount { get; set; }
+
+    bool inProgress;
+
+    async Task ChangeCount(int offset)
+    {
+        inProgress = true;
+        await Task.Delay(500);
+        CurrentCount += offset;
+        inProgress = false;
+    }
+}

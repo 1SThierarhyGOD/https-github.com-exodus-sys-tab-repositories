@@ -1,0 +1,112 @@
+#nullable enable
+Microsoft.AspNetCore.Components.ComponentRenderMode
+Microsoft.AspNetCore.Components.ComponentRenderMode.Unspecified = 0 -> Microsoft.AspNetCore.Components.ComponentRenderMode
+Microsoft.AspNetCore.Components.ComponentRenderModeAttribute
+Microsoft.AspNetCore.Components.ComponentRenderModeAttribute.ComponentRenderModeAttribute(Microsoft.AspNetCore.Components.ComponentRenderMode mode) -> void
+Microsoft.AspNetCore.Components.ComponentRenderModeAttribute.Mode.get -> Microsoft.AspNetCore.Components.ComponentRenderMode
+Microsoft.AspNetCore.Components.Infrastructure.ComponentStatePersistenceManager.PersistStateAsync(Microsoft.AspNetCore.Components.IPersistentComponentStateStore! store, Microsoft.AspNetCore.Components.RenderTree.Renderer! renderer) -> System.Threading.Tasks.Task<bool>!
+Microsoft.AspNetCore.Components.NavigationManager.HistoryEntryState.get -> string?
+Microsoft.AspNetCore.Components.NavigationManager.HistoryEntryState.set -> void
+Microsoft.AspNetCore.Components.NavigationManager.NotifyLocationChangingAsync(string! uri, string? state, bool isNavigationIntercepted) -> System.Threading.Tasks.ValueTask<bool>
+Microsoft.AspNetCore.Components.NavigationManager.RegisterLocationChangingHandler(System.Func<Microsoft.AspNetCore.Components.Routing.LocationChangingContext!, System.Threading.Tasks.ValueTask>! locationChangingHandler) -> System.IDisposable!
+Microsoft.AspNetCore.Components.NavigationOptions.HistoryEntryState.get -> string?
+Microsoft.AspNetCore.Components.NavigationOptions.HistoryEntryState.init -> void
+Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder.AddAttribute(int sequence, string! name, Microsoft.AspNetCore.Components.ComponentRenderMode renderMode) -> void
+Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder.AddContent(int sequence, Microsoft.AspNetCore.Components.MarkupString? markupContent) -> void
+Microsoft.AspNetCore.Components.RenderTree.Renderer.GetComponentDepth(int componentId) -> int
+Microsoft.AspNetCore.Components.RenderTree.Renderer.WaitForStreamingQuiescence() -> System.Threading.Tasks.Task!
+Microsoft.AspNetCore.Components.RenderTree.RenderTreeFrame.ComponentRenderMode.get -> Microsoft.AspNetCore.Components.ComponentRenderMode
+Microsoft.AspNetCore.Components.RouteData.FormValues.get -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, Microsoft.Extensions.Primitives.StringValues>>?
+Microsoft.AspNetCore.Components.RouteData.FormValues.init -> void
+Microsoft.AspNetCore.Components.RouteView.RenderMode.get -> Microsoft.AspNetCore.Components.ComponentRenderMode
+Microsoft.AspNetCore.Components.RouteView.RenderMode.set -> void
+Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs.HistoryEntryState.get -> string?
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.CancellationToken.get -> System.Threading.CancellationToken
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.CancellationToken.init -> void
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.HistoryEntryState.get -> string?
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.HistoryEntryState.init -> void
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.IsNavigationIntercepted.get -> bool
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.IsNavigationIntercepted.init -> void
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.LocationChangingContext() -> void
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.PreventNavigation() -> void
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.TargetLocation.get -> string!
+Microsoft.AspNetCore.Components.Routing.LocationChangingContext.TargetLocation.init -> void
+Microsoft.AspNetCore.Components.StreamRenderingAttribute
+Microsoft.AspNetCore.Components.StreamRenderingAttribute.StreamRenderingAttribute(bool streamRendering) -> void
+Microsoft.AspNetCore.Components.SupplyParameterFromFormAttribute
+Microsoft.AspNetCore.Components.SupplyParameterFromFormAttribute.Name.get -> string?
+Microsoft.AspNetCore.Components.SupplyParameterFromFormAttribute.Name.set -> void
+Microsoft.AspNetCore.Components.SupplyParameterFromFormAttribute.SupplyParameterFromFormAttribute() -> void
+static Microsoft.AspNetCore.Components.CompilerServices.RuntimeHelpers.CreateInferredEventCallback<T>(object! receiver, Microsoft.AspNetCore.Components.EventCallback<T> callback, T value) -> Microsoft.AspNetCore.Components.EventCallback<T>
+static Microsoft.AspNetCore.Components.CompilerServices.RuntimeHelpers.InvokeAsynchronousDelegate(System.Action! callback) -> System.Threading.Tasks.Task!
+static Microsoft.AspNetCore.Components.CompilerServices.RuntimeHelpers.InvokeAsynchronousDelegate(System.Func<System.Threading.Tasks.Task!>! callback) -> System.Threading.Tasks.Task!
+static Microsoft.AspNetCore.Components.CompilerServices.RuntimeHelpers.InvokeSynchronousDelegate(System.Action! callback) -> void
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateOnly> setter, System.DateOnly existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateOnly> setter, System.DateOnly existingValue, string! format, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateOnly?> setter, System.DateOnly? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateOnly?> setter, System.DateOnly? existingValue, string! format, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateTime> setter, System.DateTime existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateTime> setter, System.DateTime existingValue, string! format, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateTime?> setter, System.DateTime? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateTime?> setter, System.DateTime? existingValue, string! format, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateTimeOffset> setter, System.DateTimeOffset existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateTimeOffset> setter, System.DateTimeOffset existingValue, string! format, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateTimeOffset?> setter, System.DateTimeOffset? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.DateTimeOffset?> setter, System.DateTimeOffset? existingValue, string! format, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.TimeOnly> setter, System.TimeOnly existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.TimeOnly> setter, System.TimeOnly existingValue, string! format, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.TimeOnly?> setter, System.TimeOnly? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<System.TimeOnly?> setter, System.TimeOnly? existingValue, string! format, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<bool> setter, bool existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<bool?> setter, bool? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<decimal> setter, decimal existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<decimal?> setter, decimal? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<double> setter, double existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<double?> setter, double? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<float> setter, float existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<float?> setter, float? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<int> setter, int existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<int?> setter, int? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<long> setter, long existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<long?> setter, long? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<short> setter, short existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<short?> setter, short? existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<string?> setter, string! existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.CreateBinder<T>(this Microsoft.AspNetCore.Components.EventCallbackFactory! factory, object! receiver, Microsoft.AspNetCore.Components.EventCallback<T> setter, T existingValue, System.Globalization.CultureInfo? culture = null) -> Microsoft.AspNetCore.Components.EventCallback<Microsoft.AspNetCore.Components.ChangeEventArgs!>
+static Microsoft.AspNetCore.Components.ParameterView.DangerouslyCaptureUnboundComponentParameters(Microsoft.AspNetCore.Components.RenderTree.ArrayRange<Microsoft.AspNetCore.Components.RenderTree.RenderTreeFrame> frames, int ownerIndex) -> Microsoft.AspNetCore.Components.ParameterView
+virtual Microsoft.AspNetCore.Components.NavigationManager.HandleLocationChangingHandlerException(System.Exception! ex, Microsoft.AspNetCore.Components.Routing.LocationChangingContext! context) -> void
+virtual Microsoft.AspNetCore.Components.NavigationManager.SetNavigationLockState(bool value) -> void
+*REMOVED*Microsoft.AspNetCore.Components.NavigationManager.ToAbsoluteUri(string! relativeUri) -> System.Uri!
+Microsoft.AspNetCore.Components.NavigationManager.ToAbsoluteUri(string? relativeUri) -> System.Uri!
+Microsoft.AspNetCore.Components.IHandleComponentPersistentState
+Microsoft.AspNetCore.Components.IHandleComponentPersistentState.Register(Microsoft.AspNetCore.Components.PersistentScope! scope) -> void
+Microsoft.AspNetCore.Components.IHandleComponentPersistentState.Scope.get -> Microsoft.AspNetCore.Components.PersistentScope!
+Microsoft.AspNetCore.Components.IHandleComponentPersistentState.Scope.set -> void
+Microsoft.AspNetCore.Components.IHandlePersistentState
+Microsoft.AspNetCore.Components.IHandlePersistentState.PersistState(Microsoft.AspNetCore.Components.IPersistentComponentState! state) -> void
+Microsoft.AspNetCore.Components.IHandlePersistentState.RestoreState(Microsoft.AspNetCore.Components.IPersistentComponentState! state) -> void
+Microsoft.AspNetCore.Components.IPersistentComponentState
+Microsoft.AspNetCore.Components.IPersistentComponentState.PersistAsJson<TValue>(string! key, TValue instance) -> void
+Microsoft.AspNetCore.Components.IPersistentComponentState.TryTakeFromJson<TValue>(string! key, out TValue? instance) -> bool
+Microsoft.AspNetCore.Components.PersistedAttribute
+Microsoft.AspNetCore.Components.PersistedAttribute.PersistedAttribute() -> void
+Microsoft.AspNetCore.Components.PersistentBoundary
+Microsoft.AspNetCore.Components.PersistentBoundary.Attach(Microsoft.AspNetCore.Components.RenderHandle renderHandle) -> void
+Microsoft.AspNetCore.Components.PersistentBoundary.ChildContent.get -> Microsoft.AspNetCore.Components.RenderFragment!
+Microsoft.AspNetCore.Components.PersistentBoundary.ChildContent.set -> void
+Microsoft.AspNetCore.Components.PersistentBoundary.Dispose() -> void
+Microsoft.AspNetCore.Components.PersistentBoundary.Name.get -> string!
+Microsoft.AspNetCore.Components.PersistentBoundary.Name.set -> void
+Microsoft.AspNetCore.Components.PersistentBoundary.ParentScope.get -> Microsoft.AspNetCore.Components.PersistentScope!
+Microsoft.AspNetCore.Components.PersistentBoundary.ParentScope.set -> void
+Microsoft.AspNetCore.Components.PersistentBoundary.PersistentBoundary() -> void
+Microsoft.AspNetCore.Components.PersistentBoundary.PersistentState.get -> Microsoft.AspNetCore.Components.PersistentComponentState!
+Microsoft.AspNetCore.Components.PersistentBoundary.PersistentState.set -> void
+Microsoft.AspNetCore.Components.PersistentBoundary.SetParametersAsync(Microsoft.AspNetCore.Components.ParameterView parameters) -> System.Threading.Tasks.Task!
+Microsoft.AspNetCore.Components.PersistentScope
+Microsoft.AspNetCore.Components.PersistentScope.Register(Microsoft.AspNetCore.Components.IHandleComponentPersistentState! component) -> void
+Microsoft.AspNetCore.Components.PersistentScope.Restore(Microsoft.AspNetCore.Components.IHandleComponentPersistentState! component) -> void
+Microsoft.AspNetCore.Components.ScopedPersistentComponentState
+Microsoft.AspNetCore.Components.ScopedPersistentComponentState.PersistAsJson<TValue>(string! key, TValue instance) -> void
+Microsoft.AspNetCore.Components.ScopedPersistentComponentState.TryTakeFromJson<TValue>(string! key, out TValue? instance) -> bool
