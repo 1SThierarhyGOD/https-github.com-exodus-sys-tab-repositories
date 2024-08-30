@@ -1,0 +1,120 @@
+﻿@using Microsoft.AspNetCore.Components.Web.DragAndDrop
+
+@foreach (var dropCategory in dropCategories)
+{
+    <Drop
+            TItem="Person"
+            CanDrop="(person) => person.Filter.HasFlag(dropCategory)"
+            OnDrop="(person, e) => OnDrop(person, e, dropCategory)"
+            OnDragOver="(person, e) => OnDragOver(person, e, dropCategory)"
+            style=@(lastDraggedOverDropCategory == dropCategory ? draggedOverStyle : null)>
+        <h3>@dropCategory</h3>
+        @foreach (var item in people.Where(p => p.CurrentCategory == dropCategory))
+        {
+            <Drag Item="item" OnDragStart="OnDragStart" OnDragEnd="OnDragEnd" @key="item">
+                @item.Name
+            </Drag>
+            <br />
+        }
+    </Drop>
+
+    <hr /> 
+}
+
+@code {
+    [Flags]
+    enum Filter
+    {
+        None = 0,
+        NameStartsWithJ = 1,
+        NameIsFeminine = 2,
+        ExcludeFromEverything = ~0,
+    }
+
+    readonly List<Filter> dropCategories = new()
+    {
+        Filter.None,
+        Filter.NameStartsWithJ,
+        Filter.NameIsFeminine,
+    };
+
+    class Person
+    {
+        public string Name { get; }
+        public Filter Filter { get; }
+        public Filter CurrentCategory { get; set; }
+
+        public Person(string name, Filter filter)
+        {
+            Name = name;
+            Filter = filter;
+            CurrentCategory = Filter.None;
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+    }
+
+    readonly List<Person> people = new()
+    {
+        new Person("Bob", Filter.None),
+        new Person("Christopher", Filter.None),
+        new Person("Sarah", Filter.NameIsFeminine),
+        new Person("John", Filter.NameStartsWithJ),
+        new Person("Jasmine", Filter.NameStartsWithJ | Filter.NameIsFeminine),
+        new Person("Jenny", Filter.NameStartsWithJ | Filter.NameIsFeminine),
+    };
+
+    Filter? lastDraggedOverDropCategory;
+    string draggedOverStyle = string.Empty;
+
+    void OnDragStart(Person person, MutableDragEventArgs e)
+    {
+        // Remove the person from all lists while dragging.
+        person.CurrentCategory = Filter.ExcludeFromEverything;
+
+        e.DataTransfer.SetData("text/plain", $"We're moving {person.Name}");
+        e.DataTransfer.SetDragImage("images/blazor_logo_1000x.png", 500, 500);
+
+        // Don't call StateHasChanged() in OnDragStart() if it would remove the node being dragged.
+        // This would immediately invoke OnDragEnd(), terminating the drag operation.
+
+        // This is intended browser behavior - if the target DOM node is removed during the dragstart
+        // event, the drag operation terminates.
+
+        // You can instead use the OnDragOver() event to call StateHasChanged() and apply the changes.
+    }
+
+    void OnDragEnd(Person person, MutableDragEventArgs e, Drop<Person> targetDrop)
+    {
+        Console.WriteLine($"Dragging ended: {person.Name}, {targetDrop?.ToString() ?? "<no drop target>"}");
+
+        if (targetDrop is null)
+        {
+            person.CurrentCategory = Filter.None;
+        }
+
+        lastDraggedOverDropCategory = null;
+
+        StateHasChanged();
+    }
+
+    void OnDrop(Person person, MutableDragEventArgs e, Filter category)
+    {
+        Console.WriteLine($"DataTransfer data: '{e.DataTransfer.GetData("text/plain")}'");
+
+        person.CurrentCategory = category;
+
+        StateHasChanged();
+    }
+
+    void OnDragOver(Person person, MutableDragEventArgs e, Filter category)
+    {
+        lastDraggedOverDropCategory = category;
+        draggedOverStyle = $"background-color: rgb(0, {e.ClientX}, {e.ClientY});";
+
+        StateHasChanged();
+    }
+}
