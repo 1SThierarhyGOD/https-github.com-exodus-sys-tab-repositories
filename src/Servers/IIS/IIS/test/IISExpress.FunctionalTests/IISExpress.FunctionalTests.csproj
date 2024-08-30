@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../FunctionalTest.props" />
+
+  <PropertyGroup>
+    <TargetFramework>$(DefaultNetCoreTargetFramework)</TargetFramework>
+    <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
+    <TestGroupName>IISExpress.FunctionalTests</TestGroupName>
+    <SkipTests Condition=" '$(SkipIISExpressTests)' == 'true' ">true</SkipTests>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Server.IIS" />
+    <ProjectReference Include="..\testassets\IIS.Common.TestLib\IIS.Common.TestLib.csproj" />
+    <ProjectReference Include="$(RepoRoot)src\Hosting\Server.IntegrationTesting\src\Microsoft.AspNetCore.Server.IntegrationTesting.csproj" />
+    <ProjectReference Include="$(RepoRoot)src\Servers\IIS\IntegrationTesting.IIS\src\Microsoft.AspNetCore.Server.IntegrationTesting.IIS.csproj" />
+
+    <ProjectReference Include="..\testassets\InProcessWebSite\InProcessWebSite.csproj">
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Common.FunctionalTests\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Hosting" />
+    <Reference Include="Microsoft.Extensions.Logging" />
+    <Reference Include="System.Diagnostics.EventLog" />
+    <Reference Include="System.Net.Http.WinHttpHandler" />
+  </ItemGroup>
+
+</Project>
