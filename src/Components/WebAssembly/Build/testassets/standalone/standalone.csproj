@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <Import Project="$(ReferenceBlazorBuildFromSourceProps)" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RazorLangVersion>3.0</RazorLangVersion>
+  </PropertyGroup>
+
+  <!-- Test Placeholder -->
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Runtime" Version="$(MicrosoftAspNetCoreComponentsWebAssemblyRuntimePackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\razorclasslibrary\RazorClassLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- These assets should be treated as static web assets for publish purposes -->
+    <Content Include="..\LinkBaseToWebRoot\**\*.js">
+      <LinkBase>wwwroot\</LinkBase>
+    </Content>
+
+    <!-- This asset should be ignored as a static web assets as it defines CopyToPublishDirectory="false" -->
+    <Content Update="wwwroot\css\site.css" CopyToPublishDirectory="false" />
+
+    <!-- This asset should be treated as a static web asset and copied into the right location defined by its link attribute. -->
+    <Content Include="LinkToWebRoot\css\site.css" Link="wwwroot\css\site.css" />
+
+    <!-- This asset should not be treated as a static web asset as it is being linked out of the wwwroot folder. -->
+    <Content Update="wwwroot\Fake-License.txt" Link="Excluded-Static-Web-Assets\Fake-License.txt" />
+    
+  </ItemGroup>
+
+</Project>

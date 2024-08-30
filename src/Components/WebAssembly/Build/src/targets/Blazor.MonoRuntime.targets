@@ -1,0 +1,354 @@
+<Project>
+  <PropertyGroup>
+    <BlazorWebAssemblyEnableLinking Condition="'$(BlazorWebAssemblyEnableLinking)' == '' AND '$(Configuration)' != 'Debug'">true</BlazorWebAssemblyEnableLinking>
+    <BlazorWebAssemblyEnableLinking Condition="'$(BlazorWebAssemblyEnableLinking)' == ''">false</BlazorWebAssemblyEnableLinking>
+  </PropertyGroup>
+
+  <Target
+    Name="_PrepareBlazorOutputs"
+    DependsOnTargets="_ResolveBlazorInputs;_ResolveBlazorOutputs;_GenerateBlazorBootJson">
+  </Target>
+
+  <Target Name="_ResolveBlazorInputs" DependsOnTargets="ResolveReferences;ResolveRuntimePackAssets">
+    <Error Text="BlazorLinkOnBuild has been renamed to BlazorWebAssemblyEnableLinking. Please update your project files to use the new property."
+           Condition="'$(BlazorLinkOnBuild)' != ''" />
+
+    <PropertyGroup>
+      <!-- /obj/<<configuration>>/<<targetframework>>/blazor -->
+      <_BlazorIntermediateOutputPath>$(IntermediateOutputPath)blazor\</_BlazorIntermediateOutputPath>
+
+      <!-- /obj/<<configuration>>/<<targetframework>>/blazor/linker.descriptor.xml -->
+      <_GeneratedBlazorLinkerDescriptor>$(_BlazorIntermediateOutputPath)linker.descriptor.xml</_GeneratedBlazorLinkerDescriptor>
+
+      <_TypeGranularityLinkerDescriptor>$(_BlazorIntermediateOutputPath)linker.typegranularityconfig.xml</_TypeGranularityLinkerDescriptor>
+
+      <!-- /obj/<<configuration>>/<<targetframework>>/blazor/linker/ -->
+      <_BlazorIntermediateLinkerOutputPath>$(_BlazorIntermediateOutputPath)linker/</_BlazorIntermediateLinkerOutputPath>
+
+      <!-- /obj/<<configuration>>/<<targetframework>>/blazor/blazor.boot.json -->
+      <_BlazorBootJsonIntermediateOutputPath>$(_BlazorIntermediateOutputPath)$(_BlazorBootJsonName)</_BlazorBootJsonIntermediateOutputPath>
+
+      <_BlazorLinkerOutputCache>$(_BlazorIntermediateOutputPath)linker.output</_BlazorLinkerOutputCache>
+
+      <_BlazorApplicationAssembliesCacheFile>$(_BlazorIntermediateOutputPath)unlinked.output</_BlazorApplicationAssembliesCacheFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_WebAssemblyBCLFolder Include="
+        $(ComponentsWebAssemblyBaseClassLibraryPath);
+        $(ComponentsWebAssemblyBaseClassLibraryFacadesPath);
+        $(ComponentsWebAssemblyFrameworkPath)" />
+
+      <_WebAssemblyBCLAssembly Include="%(_WebAssemblyBCLFolder.Identity)*.dll" />
+    </ItemGroup>
+
+    <!--
+      Calculate the assemblies that act as inputs to calculate assembly closure. Based on _ComputeAssembliesToPostprocessOnPublish which is used as input to SDK's linker
+      https://github.com/dotnet/sdk/blob/d597e7b09d7657ba4e326d6734e14fcbf8473564/src/Tasks/Microsoft.NET.Build.Tasks/targets/Microsoft.NET.Publish.targets#L864-L873
+    -->
+    <ItemGroup>
+      <!-- Assemblies from packages -->
+      <_BlazorManagedRuntimeAssemby Include="@(RuntimeCopyLocalItems)" />
+
+      <!-- Assemblies from other references -->
+      <_BlazorUserRuntimeAssembly Include="@(ReferencePath->WithMetadataValue('CopyLocal', 'true'))"  />
+      <_BlazorUserRuntimeAssembly Include="@(ReferenceDependencyPaths->WithMetadataValue('CopyLocal', 'true'))" />
+
+      <_BlazorManagedRuntimeAssemby Include="@(_BlazorUserRuntimeAssembly)" />
+      <_BlazorManagedRuntimeAssemby Include="@(IntermediateAssembly)" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(_BlazorIntermediateOutputPath)" />
+  </Target>
+
+  <Target Name="_ResolveBlazorOutputs" DependsOnTargets="_ResolveBlazorOutputsWhenLinked;_ResolveBlazorOutputsWhenNotLinked">
+    <!--
+      These are the items calculated as the closure of the runtime assemblies, either by calling the linker
+      or by calling our custom ResolveBlazorRuntimeDependencies task if the linker was disabled. Other than
+      satellite assemblies, this should include all assemblies needed to run the application.
+    -->
+    <ItemGroup>
+      <!--
+        ReferenceCopyLocalPaths includes all files that are part of the build out with CopyLocalLockFileAssemblies on.
+        Remove assemblies that are inputs to calculating the assembly closure. Instead use the resolved outputs, since it is the minimal set.
+       -->
+      <_BlazorCopyLocalPaths Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)' == '.dll'" />
+      <_BlazorCopyLocalPaths Remove="@(_BlazorManagedRuntimeAssemby)" />
+
+      <_BlazorOutputWithTargetPath Include="@(_BlazorCopyLocalPaths)">
+        <!-- This group is for satellite assemblies. We set the resource name to include a path, e.g. "fr\\SomeAssembly.resources.dll" -->
+        <BootManifestResourceType Condition="'%(Extension)' == '.dll'">assembly</BootManifestResourceType>
+        <BootManifestResourceType Condition="'%(Extension)' == '.pdb'">pdb</BootManifestResourceType>
+        <BootManifestResourceName>%(_BlazorCopyLocalPaths.DestinationSubDirectory)%(FileName)%(Extension)</BootManifestResourceName>
+        <TargetOutputPath>$(_BlazorRuntimeBinOutputPath)%(_BlazorCopyLocalPaths.DestinationSubDirectory)%(FileName)%(Extension)</TargetOutputPath>
+      </_BlazorOutputWithTargetPath>
+
+      <_BlazorOutputWithTargetPath Include="@(_BlazorResolvedAssembly)">
+        <BootManifestResourceType Condition="'%(Extension)' == '.dll'">assembly</BootManifestResourceType>
+        <BootManifestResourceType Condition="'%(Extension)' == '.pdb'">pdb</BootManifestResourceType>
+        <BootManifestResourceName>%(FileName)%(Extension)</BootManifestResourceName>
+        <TargetOutputPath>$(_BlazorRuntimeBinOutputPath)%(FileName)%(Extension)</TargetOutputPath>
+      </_BlazorOutputWithTargetPath>
+    </ItemGroup>
+
+    <!--
+      We need to know at build time (not publish time) whether or not to include pdbs in the
+      blazor.boot.json file, so this is controlled by the BlazorEnableDebugging flag, whose
+      default value is determined by the build configuration.
+    -->
+    <ItemGroup Condition="'$(BlazorEnableDebugging)' != 'true'">
+      <_BlazorOutputWithTargetPath Remove="@(_BlazorOutputWithTargetPath)" Condition="'%(Extension)' == '.pdb'" />
+    </ItemGroup>
+
+    <!--
+      The following itemgroup attempts to extend the set to include satellite assemblies.
+      The mechanism behind this (or whether it's correct) is a bit unclear so
+      https://github.com/dotnet/aspnetcore/issues/18951 tracks the need for follow-up.
+    -->
+    <ItemGroup>
+      <!--
+          ReferenceCopyLocalPaths includes all files that are part of the build out with CopyLocalLockFileAssemblies on.
+          Remove assemblies that are inputs to calculating the assembly closure. Instead use the resolved outputs, since it is the minimal set.
+         -->
+      <_BlazorCopyLocalPaths Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)' == '.dll'" />
+      <_BlazorCopyLocalPaths Remove="@(_BlazorManagedRuntimeAssemby)" Condition="'%(Extension)' == '.dll'" />
+
+      <_BlazorOutputWithTargetPath Include="@(_BlazorCopyLocalPaths)">
+        <BootManifestResourceType Condition="'%(Extension)' == '.dll'">assembly</BootManifestResourceType>
+        <BootManifestResourceType Condition="'%(Extension)' == '.pdb'">pdb</BootManifestResourceType>
+        <BootManifestResourceName>%(_BlazorCopyLocalPaths.DestinationSubDirectory)%(FileName)%(Extension)</BootManifestResourceName>
+        <TargetOutputPath>$(_BlazorRuntimeBinOutputPath)%(_BlazorCopyLocalPaths.DestinationSubDirectory)%(FileName)%(Extension)</TargetOutputPath>
+      </_BlazorOutputWithTargetPath>
+    </ItemGroup>
+
+    <!--
+      TODO: Instead of dynamically switching the TargetOutputPath for dotnet.js here, actually
+      change the physical filename inside the M.A.C.W.Runtime package so it includes the package's
+      version (e.g., dotnet.3.2.0-preview3.12345.js). Then we can eliminate the following property
+      and recombine the two item groups _DotNetWasmRuntimeFile and _DotNetWasmJsFile below, simply putting all of
+      $(ComponentsWebAssemblyRuntimePath)* into _BlazorOutputWithTargetPath using their physical names.
+
+      The actual value 3.2.0-preview2 is hardcoded here until we update M.A.C.W.Runtime to do this.
+    -->
+    <PropertyGroup>
+      <TemporaryDotNetJsFileVersion>3.2.0-preview2</TemporaryDotNetJsFileVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_DotNetWasmRuntimeFile Include="$(ComponentsWebAssemblyRuntimePath)*.wasm" />
+      <_BlazorOutputWithTargetPath Include="@(_DotNetWasmRuntimeFile)">
+        <TargetOutputPath>$(_BlazorRuntimeWasmOutputPath)%(FileName)%(Extension)</TargetOutputPath>
+        <BootManifestResourceType>runtime</BootManifestResourceType>
+        <BootManifestResourceName>%(FileName)%(Extension)</BootManifestResourceName>
+      </_BlazorOutputWithTargetPath>
+
+      <_DotNetWasmJsFile Include="$(ComponentsWebAssemblyRuntimePath)*.js" />
+      <_BlazorOutputWithTargetPath Include="@(_DotNetWasmJsFile)">
+        <TargetOutputPath>$(_BlazorRuntimeWasmOutputPath)%(FileName).$(TemporaryDotNetJsFileVersion)%(Extension)</TargetOutputPath>
+        <BootManifestResourceType>runtime</BootManifestResourceType>
+        <BootManifestResourceName>%(FileName).$(TemporaryDotNetJsFileVersion)%(Extension)</BootManifestResourceName>
+      </_BlazorOutputWithTargetPath>
+
+      <_BlazorJSFile Include="$(_BlazorJSPath)" />
+      <_BlazorJSFile Include="$(_BlazorJSMapPath)" Condition="Exists('$(_BlazorJSMapPath)')" />
+      <_BlazorOutputWithTargetPath Include="@(_BlazorJSFile)">
+        <TargetOutputPath>$(_BaseBlazorRuntimeOutputPath)%(FileName)%(Extension)</TargetOutputPath>
+      </_BlazorOutputWithTargetPath>
+    </ItemGroup>
+  </Target>
+
+  <!--
+  Linker enabled part of the pipeline:
+
+  * If there are no descriptors defined, generate a new linker descriptor.
+  * Invoke the linker and write linked files to a well-known directory.
+  * Collect the outputs of the linker.
+  -->
+
+  <Target
+    Name="_ResolveBlazorOutputsWhenLinked"
+    Condition="'$(BlazorWebAssemblyEnableLinking)' == 'true'"
+    DependsOnTargets="_PrepareBlazorLinkerInputs;_Generate_BlazorLinkerDescriptor;_GenerateTypeGranularLinkerDescriptor;_LinkBlazorApplication">
+
+    <!-- _BlazorLinkerOutputCache records files linked during the last incremental build of the target. Read the contents and assign linked files to be copied to the output. -->
+    <ReadLinesFromFile File="$(_BlazorLinkerOutputCache)">
+      <Output TaskParameter="Lines" ItemName="_BlazorResolvedAssembly"/>
+    </ReadLinesFromFile>
+  </Target>
+
+  <Target Name="_PrepareBlazorLinkerInputs">
+    <ItemGroup>
+      <_BlazorRuntimeCopyLocalItems Include="@(RuntimeCopyLocalItems)" />
+
+      <!--
+        Any assembly from a package reference that starts with System. file name is allowed to be linked.
+        Assemblies from Microsoft.AspNetCore and Microsoft.Extensions, are also linked but with TypeGranularity.
+      -->
+      <_BlazorRuntimeCopyLocalItems IsLinkable="true" Condition="$([System.String]::Copy('%(Filename)').StartsWith('System.'))" />
+      <_BlazorRuntimeCopyLocalItems IsLinkable="true" TypeGranularity="true" Condition="$([System.String]::Copy('%(Filename)').StartsWith('Microsoft.AspNetCore.'))" />
+      <_BlazorRuntimeCopyLocalItems IsLinkable="true" TypeGranularity="true" Condition="$([System.String]::Copy('%(Filename)').StartsWith('Microsoft.Extensions.'))" />
+
+      <_BlazorAssemblyToLink Include="@(_WebAssemblyBCLAssembly)" />
+      <_BlazorAssemblyToLink Include="@(_BlazorRuntimeCopyLocalItems)" Condition="'%(_BlazorRuntimeCopyLocalItems.IsLinkable)' == 'true'" />
+
+      <_BlazorLinkerRoot Include="@(IntermediateAssembly)" />
+      <_BlazorLinkerRoot Include="@(_BlazorUserRuntimeAssembly)" />
+      <_BlazorLinkerRoot Include="@(_BlazorRuntimeCopyLocalItems)" Condition="'%(_BlazorRuntimeCopyLocalItems.IsLinkable)' != 'true'" />
+    </ItemGroup>
+
+  </Target>
+
+  <UsingTask TaskName="BlazorCreateRootDescriptorFile" AssemblyFile="$(_BlazorTasksPath)" />
+  <Target Name="_Generate_BlazorLinkerDescriptor"
+          Inputs="@(IntermediateAssembly)"
+          Outputs="$(_GeneratedBlazorLinkerDescriptor)"
+          Condition="'@(_BlazorLinkerDescriptor)' == ''">
+
+    <!-- Generate linker descriptors if the project doesn't explicitly provide one. -->
+
+    <BlazorCreateRootDescriptorFile
+      AssemblyNames="@(IntermediateAssembly->'%(Filename)')"
+      RootDescriptorFilePath="$(_GeneratedBlazorLinkerDescriptor)" />
+
+    <ItemGroup>
+      <FileWrites Include="$(_GeneratedBlazorLinkerDescriptor)" />
+      <_BlazorLinkerDescriptor Include="$(_GeneratedBlazorLinkerDescriptor)" />
+      <_BlazorLinkerDescriptor Include="$(_BlazorBuiltInBclLinkerDescriptor)" />
+    </ItemGroup>
+  </Target>
+
+  <UsingTask TaskName="GenerateTypeGranularityLinkingConfig" AssemblyFile="$(_BlazorTasksPath)" />
+  <Target Name="_GenerateTypeGranularLinkerDescriptor"
+          Inputs="@(_BlazorAssemblyToLink->WithMetadataValue('TypeGranularity', 'true'))"
+          Outputs="$(_TypeGranularityLinkerDescriptor)">
+
+    <GenerateTypeGranularityLinkingConfig
+      Assemblies="@(_BlazorAssemblyToLink->WithMetadataValue('TypeGranularity', 'true'))"
+      OutputPath="$(_TypeGranularityLinkerDescriptor)" />
+
+    <ItemGroup>
+      <_BlazorLinkerDescriptor Include="$(_TypeGranularityLinkerDescriptor)" />
+      <FileWrites Include="$(_TypeGranularityLinkerDescriptor)" />
+    </ItemGroup>
+  </Target>
+
+  <UsingTask TaskName="BlazorILLink" AssemblyFile="$(_BlazorTasksPath)" />
+  <Target
+      Name="_LinkBlazorApplication"
+      Inputs="$(ProjectAssetsFile);
+              @(_BlazorManagedRuntimeAssemby);
+              @(_BlazorLinkerDescriptor);
+              $(MSBuildAllProjects)"
+      Outputs="$(_BlazorLinkerOutputCache)">
+
+    <PropertyGroup>
+      <_BlazorLinkerAdditionalOptions>-l $(MonoLinkerI18NAssemblies) $(AdditionalMonoLinkerOptions)</_BlazorLinkerAdditionalOptions>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_OldLinkedFile Include="$(_BlazorIntermediateLinkerOutputPath)*.dll" />
+      <_OldLinkedFile Include="$(_BlazorIntermediateLinkerOutputPath)*.pdb" />
+    </ItemGroup>
+
+    <Delete Files="@(_OldLinkedFile)" />
+
+    <!--
+      When running from Desktop MSBuild, DOTNET_HOST_PATH is not set.
+      In this case, explicitly specify the path to the dotnet host.
+    -->
+    <PropertyGroup Condition=" '$(DOTNET_HOST_PATH)' == '' ">
+      <_DotNetHostDirectory>$(NetCoreRoot)</_DotNetHostDirectory>
+      <_DotNetHostFileName>dotnet</_DotNetHostFileName>
+      <_DotNetHostFileName Condition=" '$(OS)' == 'Windows_NT' ">dotnet.exe</_DotNetHostFileName>
+    </PropertyGroup>
+
+    <BlazorILLink
+        ILLinkPath="$(ComponentsWebAssemblyLinkerPath)"
+        AssemblyPaths="@(_BlazorAssemblyToLink)"
+        RootAssemblyNames="@(_BlazorLinkerRoot)"
+        RootDescriptorFiles="@(_BlazorLinkerDescriptor)"
+        OutputDirectory="$(_BlazorIntermediateLinkerOutputPath)"
+        ExtraArgs="$(_BlazorLinkerAdditionalOptions)"
+        ToolExe="$(_DotNetHostFileName)"
+        ToolPath="$(_DotNetHostDirectory)" />
+
+    <ItemGroup>
+      <_LinkerResult Include="$(_BlazorIntermediateLinkerOutputPath)*.dll" />
+      <_LinkerResult Include="$(_BlazorIntermediateLinkerOutputPath)*.pdb" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(_BlazorLinkerOutputCache)" Lines="@(_LinkerResult)" Overwrite="true" />
+  </Target>
+
+  <UsingTask TaskName="ResolveBlazorRuntimeDependencies" AssemblyFile="$(_BlazorTasksPath)" />
+  <Target
+    Name="_ResolveBlazorOutputsWhenNotLinked"
+    DependsOnTargets="_ResolveBlazorRuntimeDependencies"
+    Condition="'$(BlazorWebAssemblyEnableLinking)' != 'true'">
+
+    <ReadLinesFromFile File="$(_BlazorApplicationAssembliesCacheFile)" Condition="'@(_BlazorResolvedAssembly->Count())' == '0'">
+      <Output TaskParameter="Lines" ItemName="_BlazorResolvedAssembly"/>
+    </ReadLinesFromFile>
+  </Target>
+
+  <Target
+    Name="_ResolveBlazorRuntimeDependencies"
+    Inputs="$(ProjectAssetsFile);
+            @(IntermediateAssembly);
+            @(_BlazorManagedRuntimeAssemby)"
+    Outputs="$(_BlazorApplicationAssembliesCacheFile)">
+
+    <!--
+    At this point we have decided not to run the linker and instead to just copy the assemblies
+    from the BCL referenced by the app the nuget package into the _framework/_bin folder.
+    The only thing we need to do here is collect the list of items that will go into _framework/_bin.
+    -->
+    <ResolveBlazorRuntimeDependencies
+      EntryPoint="@(IntermediateAssembly)"
+      ApplicationDependencies="@(_BlazorManagedRuntimeAssemby)"
+      WebAssemblyBCLAssemblies="@(_WebAssemblyBCLAssembly)">
+
+      <Output TaskParameter="Dependencies" ItemName="_BlazorResolvedAssembly" />
+    </ResolveBlazorRuntimeDependencies>
+
+    <WriteLinesToFile File="$(_BlazorApplicationAssembliesCacheFile)" Lines="@(_BlazorResolvedAssembly)" Overwrite="true" />
+
+    <ItemGroup>
+      <FileWrites Include="$(_BlazorApplicationAssembliesCacheFile)" />
+    </ItemGroup>
+  </Target>
+
+  <UsingTask TaskName="GenerateBlazorBootJson" AssemblyFile="$(_BlazorTasksPath)" />
+
+  <Target
+    Name="_GenerateBlazorBootJson"
+    Inputs="$(MSBuildAllProjects);@(_BlazorOutputWithTargetPath)"
+    Outputs="$(_BlazorBootJsonIntermediateOutputPath)">
+    <ItemGroup>
+      <_BlazorBootResource Include="@(_BlazorOutputWithTargetPath->HasMetadata('BootManifestResourceType'))" />
+    </ItemGroup>
+
+    <GetFileHash Files="@(_BlazorBootResource)" Algorithm="SHA256" HashEncoding="base64">
+      <Output TaskParameter="Items" ItemName="_BlazorBootResourceWithHash" />
+    </GetFileHash>
+
+    <PropertyGroup>
+      <_IsDebugBuild>false</_IsDebugBuild>
+      <_IsDebugBuild Condition="'$(Configuration)' == 'Debug'">true</_IsDebugBuild>
+      <BlazorCacheBootResources Condition="'$(BlazorCacheBootResources)' == ''">true</BlazorCacheBootResources>
+    </PropertyGroup>
+    <GenerateBlazorBootJson
+      AssemblyPath="@(IntermediateAssembly)"
+      Resources="@(_BlazorBootResourceWithHash)"
+      DebugBuild="$(_IsDebugBuild)"
+      LinkerEnabled="$(BlazorWebAssemblyEnableLinking)"
+      CacheBootResources="$(BlazorCacheBootResources)"
+      OutputPath="$(_BlazorBootJsonIntermediateOutputPath)" />
+
+    <ItemGroup>
+      <_BlazorOutputWithTargetPath Include="$(_BlazorBootJsonIntermediateOutputPath)" TargetOutputPath="$(_BaseBlazorRuntimeOutputPath)$(_BlazorBootJsonName)" />
+      <FileWrites Include="$(_BlazorBootJsonIntermediateOutputPath)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

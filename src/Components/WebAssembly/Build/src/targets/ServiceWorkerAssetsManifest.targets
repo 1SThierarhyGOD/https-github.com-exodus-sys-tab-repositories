@@ -1,0 +1,79 @@
+<Project>
+
+  <Target Name="_ComputeServiceWorkerAssetsManifestInputs"
+          Condition="'$(ServiceWorkerAssetsManifest)' != ''"
+          BeforeTargets="_ResolveBlazorOutputs">
+
+    <PropertyGroup>
+      <_ServiceWorkerAssetsManifestIntermediateOutputPath>$(_BlazorIntermediateOutputPath)serviceworkerassets.js</_ServiceWorkerAssetsManifestIntermediateOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_BlazorOutputWithTargetPath Condition="'$(ServiceWorkerAssetsManifest)' != ''"
+        Include="$(_ServiceWorkerAssetsManifestIntermediateOutputPath)"
+        TargetOutputPath="$(_BaseBlazorDistPath)$(ServiceWorkerAssetsManifest)" />
+    </ItemGroup>
+
+  </Target>
+
+  <UsingTask TaskName="GenerateServiceWorkerAssetsManifest" AssemblyFile="$(_BlazorTasksPath)" />
+
+  <Target Name="_WriteServiceWorkerAssetsManifest"
+          Condition="'$(ServiceWorkerAssetsManifest)' != ''"
+          Inputs="@(ServiceWorkerAssetsManifestItem)"
+          Outputs="$(_ServiceWorkerAssetsManifestIntermediateOutputPath)"
+          BeforeTargets="_BlazorStaticWebAssetsCopyGeneratedFilesToOutputDirectory"
+          DependsOnTargets="_ComputeServiceWorkerAssetsManifestFileHashes; _ComputeDefaultServiceWorkerAssetsManifestVersion">
+
+    <GenerateServiceWorkerAssetsManifest
+      Version="$(ServiceWorkerAssetsManifestVersion)"
+      AssetsWithHashes="@(_ServiceWorkerAssetsManifestItemWithHash)"
+      OutputPath="$(_ServiceWorkerAssetsManifestIntermediateOutputPath)" />
+
+    <ItemGroup>
+      <FileWrites Include="$(_ServiceWorkerAssetsManifestIntermediateOutputPath)" />
+    </ItemGroup>
+
+  </Target>
+
+  <Target Name="_ComputeServiceWorkerAssetsManifestFileHashes">
+
+    <ItemGroup>
+      <ServiceWorkerAssetsManifestItem
+        Include="%(StaticWebAsset.Identity)"
+        Condition="'%(RelativePath)' != '$(ServiceWorkerAssetsManifest)'">
+        <AssetUrl>$([System.String]::Copy('$([System.String]::Copy('%(StaticWebAsset.BasePath)').TrimEnd('/'))/%(StaticWebAsset.RelativePath)').Replace('\','/').TrimStart('/'))</AssetUrl>
+      </ServiceWorkerAssetsManifestItem>
+      <ServiceWorkerAssetsManifestItem Remove="@(_CompressedStaticWebAsset->'%(FullPath)')" />
+    </ItemGroup>
+
+    <GetFileHash Files="@(ServiceWorkerAssetsManifestItem)" Algorithm="SHA256" HashEncoding="base64">
+      <Output TaskParameter="Items" ItemName="_ServiceWorkerAssetsManifestItemWithHash" />
+    </GetFileHash>
+  </Target>
+
+  <!--
+    If no ServiceWorkerAssetsManifestVersion was specified, we compute a default value by combining all the asset hashes.
+    This is useful because then clients will only have to repopulate caches if the contents have changed.
+  -->
+  <Target Name="_ComputeDefaultServiceWorkerAssetsManifestVersion"
+          Condition="'$(ServiceWorkerAssetsManifestVersion)' == ''">
+    <PropertyGroup>
+      <_CombinedHashIntermediatePath>$(_BlazorIntermediateOutputPath)serviceworkerhashes.txt</_CombinedHashIntermediatePath>
+    </PropertyGroup>
+
+    <WriteLinesToFile
+      File="$(_CombinedHashIntermediatePath)"
+      Lines="@(_ServiceWorkerAssetsManifestItemWithHash->'%(FileHash)')"
+      Overwrite="true" />
+
+    <GetFileHash Files="$(_CombinedHashIntermediatePath)" Algorithm="SHA256" HashEncoding="base64">
+      <Output TaskParameter="Items" ItemName="_ServiceWorkerAssetsManifestCombinedHash" />
+    </GetFileHash>
+
+    <PropertyGroup>
+      <ServiceWorkerAssetsManifestVersion>$([System.String]::Copy('%(_ServiceWorkerAssetsManifestCombinedHash.FileHash)').Substring(0, 8))</ServiceWorkerAssetsManifestVersion>
+    </PropertyGroup>
+  </Target>
+
+</Project>

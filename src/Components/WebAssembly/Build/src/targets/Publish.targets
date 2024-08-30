@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <!-- Disable unwanted parts of the default publish process -->
+    <CopyBuildOutputToPublishDirectory>false</CopyBuildOutputToPublishDirectory>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <PreserveCompilationContext>false</PreserveCompilationContext>
+    <RazorCompileOnPublish>false</RazorCompileOnPublish>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <IsWebConfigTransformDisabled>true</IsWebConfigTransformDisabled>
+  </PropertyGroup>
+
+</Project>
