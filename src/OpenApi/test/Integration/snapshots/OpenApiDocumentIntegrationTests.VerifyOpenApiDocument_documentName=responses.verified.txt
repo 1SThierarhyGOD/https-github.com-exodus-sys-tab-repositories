@@ -1,0 +1,136 @@
+﻿{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Sample | responses",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/responses/200-add-xml": {
+      "get": {
+        "tags": [
+          "Sample"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Todo"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Todo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/responses/200-only-xml": {
+      "get": {
+        "tags": [
+          "Sample"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Todo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/responses/triangle": {
+      "get": {
+        "tags": [
+          "Sample"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/responses/shape": {
+      "get": {
+        "tags": [
+          "Sample"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "boolean": {
+        "type": "boolean"
+      },
+      "DateTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "int": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "string": {
+        "type": "string"
+      },
+      "Todo": {
+        "required": [
+          "id",
+          "title",
+          "completed",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/int"
+          },
+          "title": {
+            "$ref": "#/components/schemas/string"
+          },
+          "completed": {
+            "$ref": "#/components/schemas/boolean"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/DateTime"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Sample"
+    }
+  ]
+}

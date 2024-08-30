@@ -1,0 +1,201 @@
+﻿{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Sample | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/array-of-guids": {
+      "get": {
+        "tags": [
+          "Sample"
+        ],
+        "parameters": [
+          {
+            "name": "guids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ArrayOfGuid"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "default": "1.0"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfGuid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/todos": {
+      "post": {
+        "tags": [
+          "Sample"
+        ],
+        "summary": "Creates a new todo item.",
+        "parameters": [
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "default": "1.0"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "id",
+                  "title",
+                  "completed",
+                  "createdAt"
+                ],
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/components/schemas/int"
+                  },
+                  "title": {
+                    "$ref": "#/components/schemas/string"
+                  },
+                  "completed": {
+                    "$ref": "#/components/schemas/boolean"
+                  },
+                  "createdAt": {
+                    "$ref": "#/components/schemas/DateTime"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/todos/{id}": {
+      "get": {
+        "tags": [
+          "Sample"
+        ],
+        "description": "Returns a specific todo item.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/int"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "default": "1.0"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "dueDate",
+                    "id",
+                    "title",
+                    "completed",
+                    "createdAt"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "dueDate": {
+                      "$ref": "#/components/schemas/DateTime"
+                    },
+                    "id": {
+                      "$ref": "#/components/schemas/int"
+                    },
+                    "title": {
+                      "$ref": "#/components/schemas/string"
+                    },
+                    "completed": {
+                      "$ref": "#/components/schemas/boolean"
+                    },
+                    "createdAt": {
+                      "$ref": "#/components/schemas/DateTime"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArrayOfGuid": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Guid"
+        }
+      },
+      "boolean": {
+        "type": "boolean"
+      },
+      "DateTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "Guid": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "int": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "string": {
+        "type": "string"
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Json Web Token"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Sample"
+    }
+  ]
+}
