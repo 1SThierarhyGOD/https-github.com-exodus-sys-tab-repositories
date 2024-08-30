@@ -1,0 +1,73 @@
+name: update-npm-dependencies
+
+on:
+  # Manual run
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  update-npm-dependencies:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout aspnetcore repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'dotnet/aspnetcore'
+          path: 'main'
+
+      - name: Checkout Node-Externals repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'dotnet/Node-Externals'
+          path: 'node-externals'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Run npm install to update package-lock.json
+        shell: pwsh
+        id: npm-install-script
+        run: ./main/.github/workflows/update-npm-dependencies.ps1
+
+      - name: Create PR to update the offline package cache
+        # if: steps.update-npm-dependencies.outputs.changes == 'true'
+        id: update-offline-package-cache
+        uses: dotnet/actions-create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ./node-externals/
+          commit-message: 'Update the NPM offline cache'
+          title: '[Infrastructure] Update the NPM offline cache'
+          body: 'Updates the npm offline cache to match the associated package-lock.json file in dotnet/aspnetcore.'
+          labels: 'Type: Dependency Update :arrow_up_small:'
+          base: main
+          branch: github-action/update-npm-dependencies
+          branch-suffix: timestamp
+
+      - name: Update offline-cache submodule
+        shell: pwsh
+        working-directory: ./aspnetcore/main/
+        run: |
+          ./.github/workflows/update-submodule-commit.ps1 ${{ steps.update-offline-package-cache.outputs.pull-request-head-sha }}
+
+      - name: Create PR to update package-lock.json and the offline package cache submodule
+        # if: steps.update-npm-dependencies.outputs.changes == 'true'
+        uses: dotnet/actions-create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Update npm dependencies and offline cache submodule'
+          path: ./main/
+          title: '[Infrastructure] Update npm dependencies'
+          body: 'Updates the package-lock.json file and the offline package cache submodule to match it.'
+          labels: 'Type: Dependency Update :arrow_up_small:'
+          base: main
+          branch: github-action/update-npm-dependencies
+          branch-suffix: timestamp
