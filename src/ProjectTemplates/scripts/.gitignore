@@ -1,0 +1,15 @@
+package-lock.json
+tmp/
+CustomHive/
+angular/
+blazorserver/
+blazorwasm/
+mvc/
+razor/
+react/
+reactredux/
+web/
+webapp/
+webapi/
+worker/
+grpc/
