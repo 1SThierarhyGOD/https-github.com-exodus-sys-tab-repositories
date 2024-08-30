@@ -1,0 +1,25 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<h1>@Parameter</h1>
+
+<EditForm method="POST" Model="Parameter">
+    <InputText @bind-Value="Parameter" />
+    <input type="submit" value="Send" />
+</EditForm>
+
+@if (_submitted)
+{
+    <p>Submited.</p>
+}
+
+@code{
+    [SupplyParameterFromForm] string Parameter { get; set; } = "Hello, world!";
+
+    bool _submitted = false;
+    public void Submit()
+    {
+        _submitted = true;
+    }
+}
