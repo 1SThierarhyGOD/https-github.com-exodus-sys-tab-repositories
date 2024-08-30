@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <DefaultItemExcludes>$(DefaultItemExcludes);node_modules\**</DefaultItemExcludes>
+    <!-- WebDriver is not strong-named signed -->
+    <SignAssembly>false</SignAssembly>
+
+    <!--
+      Temporarily disabled until this runs on macOS
+    -->
+    <SkipTests Condition="'$(BlazorAllTests)' != 'true'">true</SkipTests>
+    <!-- https://github.com/aspnet/AspNetCore/issues/6857 -->
+    <BuildHelixPayload>false</BuildHelixPayload>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(SharedSourceRoot)Process\**\*.cs" LinkBase="Shared" />
+  </ItemGroup>
+
+  <!-- Version of this SDK is set in global.json -->
+  <Sdk Name="Yarn.MSBuild" />
+
+  <Target Name="EnsureNodeJSRestored" BeforeTargets="Build" Condition="'$(BlazorAllTests)'=='true'">
+    <Message Text="Running yarn install on $(MSBuildProjectFile)" Importance="High" />
+    <Yarn Command="install" />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Hosting" />
+    <Reference Include="Microsoft.AspNetCore.Server.Kestrel" />
+    <Reference Include="Microsoft.AspNetCore.StaticFiles" />
+    <Reference Include="Selenium.Support" />
+    <Reference Include="Selenium.WebDriver" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Blazor\testassets\Microsoft.AspNetCore.Blazor.E2EPerformance\Microsoft.AspNetCore.Blazor.E2EPerformance.csproj" />
+    <ProjectReference Include="..\..\Blazor\testassets\HostedInAspNet.Client\HostedInAspNet.Client.csproj" />
+    <ProjectReference Include="..\..\Blazor\testassets\HostedInAspNet.Server\HostedInAspNet.Server.csproj" />
+    <ProjectReference Include="..\..\Blazor\testassets\MonoSanityClient\MonoSanityClient.csproj" />
+    <ProjectReference Include="..\..\Blazor\testassets\MonoSanity\MonoSanity.csproj" />
+    <ProjectReference Include="..\..\Blazor\testassets\StandaloneApp\StandaloneApp.csproj" />
+    <ProjectReference Include="..\..\Blazor\Cli\src\Microsoft.AspNetCore.Blazor.Cli.csproj" />
+    <ProjectReference Include="..\testassets\ComponentsApp.App\ComponentsApp.App.csproj" />
+    <ProjectReference Include="..\testassets\ComponentsApp.Server\ComponentsApp.Server.csproj" />
+    <ProjectReference Include="..\testassets\BasicTestApp\BasicTestApp.csproj" />
+    <ProjectReference Include="..\testassets\TestServer\TestServer.csproj" />
+  </ItemGroup>
+
+</Project>

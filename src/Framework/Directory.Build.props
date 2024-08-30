@@ -1,0 +1,13 @@
+
+<Project>
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory)..\, Directory.Build.props))\Directory.Build.props" />
+
+  <PropertyGroup>
+    <!-- Temporary - some projects in this folder require a restore target against just-built packages. -->
+    <RestoreSources Condition="'$(_DisableRestoreFromLocalPackages)' != 'true'">
+      $(RestoreSources);
+      $(ArtifactsShippingPackagesDir);
+      $(ArtifactsNonShippingPackagesDir)
+    </RestoreSources>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RootNamespace>Microsoft.AspNetCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
+      <_Parameter1>PackageVersion</_Parameter1>
+      <_Parameter2>$(PackageVersion)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
+      <_Parameter1>TargetRuntimeIdentifier</_Parameter1>
+      <_Parameter2>$(TargetRuntimeIdentifier)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
+      <_Parameter1>MicrosoftNETCoreAppPackageVersion</_Parameter1>
+      <_Parameter2>$(RuntimeFrameworkVersion)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Microsoft.AspNetCore.App.shfxproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>_ResolvedFrameworkReference</OutputItemType>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="GenerateTestData" BeforeTargets="GetAssemblyAttributes" DependsOnTargets="ResolveProjectReferences;InitializeSourceControlInformation">
+    <ItemGroup>
+      <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
+        <_Parameter1>RepositoryCommit</_Parameter1>
+        <_Parameter2>$(SourceRevisionId)</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
+        <_Parameter1>SharedFxDependencies</_Parameter1>
+        <_Parameter2>@(AspNetCoreAppReference);@(AspNetCoreAppReferenceAndPackage);@(ExternalAspNetCoreAppReference);@(_TransitiveExternalAspNetCoreAppReference)</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
+        <_Parameter1>MetadataOutputPath</_Parameter1>
+        <_Parameter2>%(_ResolvedFrameworkReference.MetadataOutputPath)</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
+        <_Parameter1>ManifestOutputDir</_Parameter1>
+        <_Parameter2>%(_ResolvedFrameworkReference.ManifestOutputDir)</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="Microsoft.AspNetCore.TestData">
+        <_Parameter1>RuntimeAssetsOutputPath</_Parameter1>
+        <_Parameter2>%(_ResolvedFrameworkReference.RuntimeAssetsOutputPath)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+
+</Project>
