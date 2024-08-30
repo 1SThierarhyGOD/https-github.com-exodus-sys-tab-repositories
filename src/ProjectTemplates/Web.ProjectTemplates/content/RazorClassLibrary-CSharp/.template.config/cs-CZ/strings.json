@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0.0",
+  "strings": {
+    "name": "Knihovna tříd Razor",
+    "description": "Projekt šablony pro vytvoření knihovny tříd Razor",
+    "parameter.SupportPagesAndViews.name": "_Stránky podpory a zobrazení",
+    "parameter.UseProgramMain.name": "Nepoužívat _příkazy nejvyšší úrovně",
+    "parameter.UseProgramMain.description": "Určuje, jestli se má místo příkazů nejvyšší úrovně generovat explicitní třída Program a metoda Main."
+  }
+}
