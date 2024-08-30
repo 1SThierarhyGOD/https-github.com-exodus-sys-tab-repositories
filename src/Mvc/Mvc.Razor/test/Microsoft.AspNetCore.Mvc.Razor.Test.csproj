@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <DefineConstants>$(DefineConstants);SOME_TEST_DEFINE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="$(SharedSourceRoot)Razor\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Mvc" />
+    <Reference Include="Microsoft.AspNetCore.Mvc.TestCommon" />
+    <Reference Include="Microsoft.AspNetCore.Mvc.TestDiagnosticListener" />
+
+    <Reference Include="Microsoft.AspNetCore.Http" />
+    <Reference Include="Microsoft.Extensions.DependencyInjection" />
+    <Reference Include="Microsoft.Extensions.Logging.Testing" />
+    <Reference Include="System.Threading.Tasks.Extensions" />
+  </ItemGroup>
+
+</Project>

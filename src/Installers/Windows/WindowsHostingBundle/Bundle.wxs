@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:dep="http://schemas.microsoft.com/wix/DependencyExtension" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+    <Bundle Name="$(var.BundleName)" Version="$(var.Version)" Manufacturer="Microsoft Corporation" UpgradeCode="$(var.BundleUpgradeCode)"
+            dep:ProviderKey="$(var.BundleProviderKey)">
+        <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
+            <bal:WixStandardBootstrapperApplication LicenseUrl="https://go.microsoft.com/fwlink/?LinkId=320539"
+                                                    LogoFile="DotNetLogo.bmp"
+                                                    SuppressOptionsUI="yes"
+                                                    ThemeFile="thm.xml"
+                                                    LocalizationFile="thm.wxl"/>
+        </BootstrapperApplicationRef>
+
+        <!-- Ensure upgrades from 2.1.0 thru 2.1.23 for x64. -->
+        <?if $(var.MajorVersion)=2 and $(var.MinorVersion)=1?>
+        <!--'Microsoft .NET Core 2.1.23 - Windows Server Hosting'-->
+        <RelatedBundle Id="{51DC181C-C29B-31D7-96CA-08B2B9322269}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.22 - Windows Server Hosting'-->
+        <RelatedBundle Id="{0629F7DA-FD3D-3C43-9C74-7CAB326D8408}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.21 - Windows Server Hosting'-->
+        <RelatedBundle Id="{20C43973-8701-31FF-B9F4-ED31D88182AC}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.20 - Windows Server Hosting'-->
+        <RelatedBundle Id="{AB66B18F-8B14-3FF3-A5F1-97435938BA40}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.19 - Windows Server Hosting'-->
+        <RelatedBundle Id="{9A7F3800-1BCF-3C0A-B1B2-948D6AE80CCB}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.18 - Windows Server Hosting'-->
+        <RelatedBundle Id="{B137EB6B-4CBA-32A0-A4E7-D2B8F3FE334A}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.17 - Windows Server Hosting'-->
+        <RelatedBundle Id="{F0A8977D-AA93-3745-9727-1DBAD0EC9BA4}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.16 - Windows Server Hosting'-->
+        <RelatedBundle Id="{C9D00CC1-53C8-38DD-85C5-F07298DCE93C}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.15 - Windows Server Hosting'-->
+        <RelatedBundle Id="{7CBFCC91-2F4E-3C4F-9F02-269BF67D0EF3}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.14 - Windows Server Hosting'-->
+        <RelatedBundle Id="{790FD6ED-06E1-3CA0-B4FA-8CC0690001F5}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.12 - Windows Server Hosting'-->
+        <RelatedBundle Id="{127E0E5D-65E8-339B-9E56-710CD7CAE521}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.11 - Windows Server Hosting'-->
+        <RelatedBundle Id="{3B4D8EC5-02AC-3F77-9ECE-83B92C6232D9}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.10 - Windows Server Hosting'-->
+        <RelatedBundle Id="{A265BA58-64C8-31B5-92DC-7C071095667E}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.9 - Windows Server Hosting'-->
+        <RelatedBundle Id="{91B539CE-A269-32B4-8EB9-66A3285DED97}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.8 - Windows Server Hosting'-->
+        <RelatedBundle Id="{9F1D5735-B2F6-3C74-8F6B-2390BB739697}" Action="Upgrade" />
+        <!--'Microsoft .NET Core 2.1.7 - Windows Server Hosting'-->
+        <RelatedBundle Id="{E5555A4A-7AF5-3733-BB60-EC74A4874842}" Action="Upgrade" />
+        <?endif?>
+
+        <!-- Customizations of the default BA -->
+        <Log Prefix="dd_$(var.BundleLogPrefix)_" Extension=".log" />
+        <OptionalUpdateRegistration Manufacturer="$(var.BundleRegManufacturer)" ProductFamily="$(var.BundleRegFamily)" Name="$(var.BundleRegName)" />
+
+        <!-- Bundle variables -->
+        <Variable Name="BundleNameShort" Value="$(var.BundleNameShort)"/>
+        <Variable Name="BundleNameSub" Value="$(var.BundleNameSub)"/>
+        <Variable Name="OPT_NO_ANCM" bal:Overridable="yes"/>
+        <Variable Name="OPT_NO_FTS" bal:Overridable="yes"/>
+        <Variable Name="OPT_NO_LTS" bal:Overridable="yes"/>
+        <Variable Name="OPT_NO_SHAREDFX" bal:Overridable="yes"/>
+        <Variable Name="OPT_NO_RUNTIME" bal:Overridable="yes"/>
+        <Variable Name="OPT_NO_X86" bal:Overridable="yes"/>
+
+        <!-- Use values from the registry for switches, if the registry values are set & the user hasn't passed any switches from the command line -->
+
+        <?define Options=OPT_NO_ANCM;OPT_NO_FTS;OPT_NO_LTS;OPT_NO_SHAREDFX;OPT_NO_RUNTIME;OPT_NO_X86 ?>
+        <?define RegistrySeachCondition="NOT (OPT_NO_ANCM OR OPT_NO_ANCM=0 OR OPT_NO_FTS OR OPT_NO_FTS=0 OR OPT_NO_LTS OR OPT_NO_LTS=0 OR OPT_NO_SHAREDFX OR OPT_NO_SHAREDFX=0 OR OPT_NO_RUNTIME OR OPT_NO_RUNTIME=0 OR OPT_NO_X86 OR OPT_NO_X86=0)" ?>
+
+        <?foreach Option in $(var.Options) ?>
+            <util:RegistrySearch Id="$(var.Option)_should_be_set" 
+                             Condition="$(var.RegistrySeachCondition)"
+                             Root="HKLM" 
+                             Key="Software\Microsoft\dotnet\host\options\$(var.MajorVersion).$(var.MinorVersion)" 
+                             Value="$(var.Option)" 
+                             Result="exists" 
+                             Variable="$(var.Option)_Exists"/>
+
+            <util:RegistrySearch Condition="$(var.Option)_Exists"     
+                             After="$(var.Option)_should_be_set"
+                             Root="HKLM" Key="Software\Microsoft\dotnet\host\options\$(var.MajorVersion).$(var.MinorVersion)" 
+                             Value="$(var.Option)" 
+                             Variable="$(var.Option)"
+                             Result="value" />
+
+        <?endforeach?>
+
+        <!-- These variables control the state of conditional UI text elements. 
+             They are disabled by default and enabled based on whether or not we detect that IIS is installed -->
+        <Variable Name="InstallResetIISState" Value="disable"/>
+        <Variable Name="InstallNoIISState" Value="disable"/>
+        <Variable Name="ModifyResetIISState" Value="disable"/>
+        <Variable Name="ModifyNoIISState" Value="disable"/>
+
+        <Chain ParallelCache="yes">
+            <MsiPackage SourceFile="$(var.HostOptions.TargetPath)">
+                <MsiProperty Name="OPT_NO_ANCM" Value="[OPT_NO_ANCM]"/>
+                <MsiProperty Name="OPT_NO_FTS" Value="[OPT_NO_FTS]"/>
+                <MsiProperty Name="OPT_NO_LTS" Value="[OPT_NO_LTS]"/>
+                <MsiProperty Name="OPT_NO_SHAREDFX" Value="[OPT_NO_SHAREDFX]"/>
+                <MsiProperty Name="OPT_NO_RUNTIME" Value="[OPT_NO_RUNTIME]"/>
+                <MsiProperty Name="OPT_NO_X86" Value="[OPT_NO_X86]"/>
+            </MsiPackage> 
+            <PackageGroupRef Id="PG_ANCM" />
+            <PackageGroupRef Id="PG_DOTNET_REDIST_LTS_BUNDLE" />
+            <!--<PackageGroupRef Id="PG_DOTNET_REDIST_FTS_BUNDLE" />-->
+            <PackageGroupRef Id="PG_SHAREDFX_REDIST_BUNDLE" />
+        </Chain>
+    </Bundle>
+</Wix>

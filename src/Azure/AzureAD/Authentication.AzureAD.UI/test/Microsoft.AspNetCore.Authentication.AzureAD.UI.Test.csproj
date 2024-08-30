@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <RootNamespace>Microsoft.AspNetCore.Authentication.AzureAD.UI</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Abstractions" />
+    <Reference Include="Microsoft.AspNetCore.Authentication" />
+    <Reference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" />
+    <Reference Include="System.Diagnostics.DiagnosticSource" />
+    <Reference Include="System.Threading.Tasks.Extensions" />
+  </ItemGroup>
+
+</Project>

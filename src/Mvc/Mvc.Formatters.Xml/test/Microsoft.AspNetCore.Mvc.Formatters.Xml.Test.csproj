@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Mvc.TestCommon" />
+
+    <Reference Include="Microsoft.AspNetCore.Http" />
+    <Reference Include="Microsoft.Extensions.Logging.Testing" />
+    <Reference Include="System.Threading.Tasks.Extensions" />
+  </ItemGroup>
+
+</Project>

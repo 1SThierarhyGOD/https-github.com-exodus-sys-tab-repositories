@@ -1,0 +1,50 @@
+<Project>
+  <PropertyGroup Condition="'$(OutputType)' == 'package'">
+    <InstallDir>$(ProductName)</InstallDir>
+    <DepProviderKey>Microsoft.$(ProductNameShort)_$(Platform)_$(Lang),v$(PackageVersion)</DepProviderKey>
+    <DefineConstants>$(DefineConstants);DepProviderKey=$(DepProviderKey)</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageGuidInputs>$(Version);$(Platform)</PackageGuidInputs>
+    <BundleGuidInputs>$(AspNetCoreMajorVersion).$(AspNetCoreMinorVersion);$(Platform)</BundleGuidInputs>
+  </PropertyGroup>
+
+  <UsingTask AssemblyFile="$(OutputPath)..\InstallerTasks\InstallerTasks.dll" TaskName="RepoTasks.GenerateGuid" />
+
+  <Target Name="GenerateGUIDs" BeforeTargets="BeforeBuild" DependsOnTargets="_GeneratePackageGuids;_GenerateBundleGuids" Condition=" '$(DisableGuidGeneration)' != 'true' " />
+
+  <Target Name="_GeneratePackageGuids" Condition="'$(OutputType)' == 'package'">
+    <GenerateGuid Condition="'$(OutputName)' != '$(HostOptionsName)'" NamespaceGuid="$(NamespaceGuid)" Values="$(ProductNameShort);$(PackageGuidInputs)">
+      <Output TaskParameter="Guid" PropertyName="ProductCode" />
+    </GenerateGuid>
+    <GenerateGuid Condition="'$(OutputName)' != '$(HostOptionsName)'" NamespaceGuid="$(NamespaceGuid)" Values="$(ProductNameShort);$(PackageGuidInputs);$(OutputType)">
+      <Output TaskParameter="Guid" PropertyName="UpgradeCode" />
+    </GenerateGuid>
+
+    <GenerateGuid Condition="'$(OutputName)' == '$(HostOptionsName)'" NamespaceGuid="$(NamespaceGuid)" Values="$(ProductNameShort);$(Version)">
+      <Output TaskParameter="Guid" PropertyName="ProductCode" />
+    </GenerateGuid>
+    <GenerateGuid Condition="'$(OutputName)' == '$(HostOptionsName)'" NamespaceGuid="$(NamespaceGuid)" Values="$(ProductNameShort);$(AspNetCoreMajorMinorVersion);$(OutputType)">
+      <Output TaskParameter="Guid" PropertyName="UpgradeCode" />
+    </GenerateGuid>
+
+    <PropertyGroup>
+      <DefineConstants>$(DefineConstants);ProductCode=$(ProductCode);UpgradeCode=$(UpgradeCode)</DefineConstants>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="_GenerateBundleGuids" Condition="'$(OutputType)' == 'bundle'">
+    <GenerateGuid NamespaceGuid="$(NamespaceGuid)" Values="$(BundleNameShort);$(BundleGuidInputs)">
+      <Output TaskParameter="Guid" PropertyName="BundleProviderKey" />
+    </GenerateGuid>
+    <GenerateGuid NamespaceGuid="$(NamespaceGuid)" Values="$(BundleNameShort);$(BundleGuidInputs);$(OutputType)">
+      <Output TaskParameter="Guid" PropertyName="BundleUpgradeCode" />
+    </GenerateGuid>
+
+    <PropertyGroup>
+      <DefineConstants>$(DefineConstants);BundleProviderKey=$(BundleProviderKey);BundleUpgradeCode=$(BundleUpgradeCode)</DefineConstants>
+    </PropertyGroup>
+  </Target>
+
+</Project>

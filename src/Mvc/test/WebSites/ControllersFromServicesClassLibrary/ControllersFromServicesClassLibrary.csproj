@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <IsTestAssetProject>true</IsTestAssetProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Mvc" />
+    <Reference Include="Microsoft.AspNetCore.Razor.Runtime" />
+    <Reference Include="Microsoft.AspNetCore.Razor.Language" />
+    <Reference Include="System.Threading.Tasks.Extensions" />
+  </ItemGroup>
+</Project>
+

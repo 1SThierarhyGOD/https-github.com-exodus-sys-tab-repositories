@@ -1,0 +1,66 @@
+<Project>
+  <Target Name="BuildInstallers" DependsOnTargets="GenerateCumulativeArchives" />
+
+  <Target Name="_EnsureInstallerPrerequisites">
+    <MakeDir Directories="$(_InstallersOutputDir)" />
+
+    <Error
+      Text="Expected archive missing at $(SharedFxIntermediateArchiveFilePrefix)-%(WindowsSharedFxRIDs.Identity).zip."
+      Condition="'@(WindowsSharedFxRIDs)' != '' AND !Exists('$(SharedFxIntermediateArchiveFilePrefix)-%(WindowsSharedFxRIDs.Identity).zip')" />
+  </Target>
+
+  <Target Name="_DownloadInstallers">
+    <!-- Download dotnet installers -->
+    <MakeDir Directories="$(_InstallerSourceDir)" />
+    <KoreBuild.Tasks.DownloadFile
+      Uri="$(RuntimeArchiveLinkPrefix)-%(WindowsSharedFxRIDs.Identity).zip$(DotNetAssetRootAccessTokenSuffix)"
+      DestinationPath="$(_InstallerSourceDir)$(DotnetRuntimeFileNamePrefix)-%(WindowsSharedFxRIDs.Identity).zip"
+      Condition="'@(WindowsSharedFxRIDs)' != '' AND !Exists('$(_InstallerSourceDir)$(DotnetRuntimeFileNamePrefix)-%(WindowsSharedFxRIDs.Identity).zip')" />
+  </Target>
+
+  <Target Name="_GenerateCumulativeArchive">
+    <PropertyGroup>
+      <ArchiveExtension>.tar.gz</ArchiveExtension>
+      <ArchiveExtension Condition="$(SharedFxPlatform.StartsWith('win'))">.zip</ArchiveExtension>
+    </PropertyGroup>
+
+    <!-- Clear working directory -->
+    <RemoveDir Directories="$(_WorkRoot)" />
+    <MakeDir Directories="$(_WorkRoot)" />
+
+    <!-- Create layout: Aspnet Runtime  -->
+    <Exec
+      Command="tar -xzf $(SharedFxIntermediateArchiveFilePrefix)-$(SharedFxPlatform)$(ArchiveExtension) -C $(_WorkRoot)"
+      Condition="'$(ArchiveExtension)' == '.tar.gz'"/>
+    <Exec
+      Command="tar -xzf $(_InstallerSourceDir)$(DotnetRuntimeFileNamePrefix)-$(SharedFxPlatform)$(ArchiveExtension) -C $(_WorkRoot)"
+      Condition="'$(ArchiveExtension)' == '.tar.gz'"/>
+    <UnzipArchive
+      File="$(SharedFxIntermediateArchiveFilePrefix)-$(SharedFxPlatform)$(ArchiveExtension)"
+      Destination="$(_WorkRoot)"
+      Condition="'$(ArchiveExtension)' == '.zip'" />
+    <UnzipArchive
+      File="$(_InstallerSourceDir)$(DotnetRuntimeFileNamePrefix)-$(SharedFxPlatform)$(ArchiveExtension)"
+      Destination="$(_WorkRoot)"
+      Condition="'$(ArchiveExtension)' == '.zip'" />
+
+    <ItemGroup>
+      <SharedFxArchiveFiles Include="$(_WorkRoot)**\*" />
+    </ItemGroup>
+
+    <!-- Create Aspnet Runtime archive -->
+    <Exec
+      Command="tar -czf $(_InstallersOutputDir)$(SharedFxInstallerName)-$(PackageVersion)-$(SharedFxPlatform)$(ArchiveExtension) -C $(_WorkRoot) ."
+      Condition="'$(ArchiveExtension)' == '.tar.gz'"/>
+    <ZipArchive
+      File="$(_InstallersOutputDir)$(SharedFxInstallerName)-$(PackageVersion)-$(SharedFxPlatform)$(ArchiveExtension)"
+      SourceFiles="@(SharedFxArchiveFiles)"
+      WorkingDirectory="$(_WorkRoot)"
+      Overwrite="true"
+      Condition="'$(ArchiveExtension)' == '.zip'"/>
+  </Target>
+
+  <Target Name="GenerateCumulativeArchives" DependsOnTargets="_EnsureInstallerPrerequisites;_DownloadInstallers">
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="_GenerateCumulativeArchive" Properties="SharedFxPlatform=%(AllSharedFxRIDs.Identity)" />
+  </Target>
+</Project>

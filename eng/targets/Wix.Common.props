@@ -1,0 +1,33 @@
+<!-- Targets for making .wixproj better. -->
+<Project>
+
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProductVersion>3.14</ProductVersion>
+    <WixVersion>3.14.0-dotnet</WixVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Required to make NuGet happy -->
+    <TargetFrameworkMoniker>Native,Version=v0.0</TargetFrameworkMoniker>
+
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+    <MSBuildProjectExtensionsPath Condition="'$(MSBuildProjectExtensionsPath)' == ''">$(MSBuildProjectDir)\obj\</MSBuildProjectExtensionsPath>
+    <NuGetRestoreTargets Condition="'$(NuGetRestoreTargets)'==''">$(MSBuildExtensionsPath)\..\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets</NuGetRestoreTargets>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildProjectExtensionsPath)$(MSBuildProjectFile).*.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Wix" Version="$(WixVersion)" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <SignOutput Condition=" '$(SignType)' != '' ">true</SignOutput>
+    <DarkToolPath>$(WixExtDir)dark.exe</DarkToolPath>
+  </PropertyGroup>
+
+  <Import Project="MicroBuild.Plugin.props" Condition="'$(MicroBuildSentinelFile)' == ''" />
+  <Import Project="$(MicroBuildPluginDirectory)\MicroBuild.Plugins.*\**\build\MicroBuild.Plugins.*.props" Condition=" '$(MicroBuildPluginDirectory)' != ''" />
+
+</Project>
