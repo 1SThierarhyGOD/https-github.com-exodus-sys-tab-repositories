@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>$(DefaultNetCoreTargetFramework)</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Protobuf Include="greet.proto" GrpcServices="Server" />
+    <Protobuf Include="transcoding.proto" GrpcServices="Server" />
+
+    <Reference Include="Grpc.AspNetCore" />
+    <Reference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" />
+    <Reference Include="Microsoft.AspNetCore.Grpc.Swagger" />
+    <Reference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+</Project>
