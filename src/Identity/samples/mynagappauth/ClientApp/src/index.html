@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>myngapp</title>
+    <base href="/" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+    <app-root>Loading...</app-root>
+    <style>
+        canvas {
+            background: lightgray;
+            margin-left: 2em;
+            margin-top: 2em;
+            width: 1920px;
+            height: 1080px;
+        }
+    </style>
+    <script>
+        const S = Math.sin;
+        const C = Math.cos;
+        const T = Math.tan;
+        const step = 1 / 60;
+        const R = (r, g, b, a) => {
+            a = a === undefined ? 1 : a;
+            return "rgba(" + (r | 0) + "," + (g | 0) + "," + (b | 0) + "," + a + ")";
+        };
+
+        const state = {
+            fn: "",
+            init: false,
+            idx: 0,
+            effects: [],
+            render: false,
+            cvs: {},
+            div: {
+                innerText: ""
+            }
+        };
+
+        window.canvasStart = () => setTimeout(init);
+
+        function init() {
+            const wrapper = document.getElementById("effectsHost");
+            const children = document.querySelectorAll("div.d-none");
+
+            for (let i = 0; i < children.length; i++) {
+                state.effects.push(children[i].innerText);
+            };
+
+            state.fn = state.effects[0];
+
+            state.div = document.createElement("div");
+            wrapper.appendChild(state.div);
+            state.cvs = document.createElement("canvas");
+            state.cvs.width = 1920;
+            state.cvs.height = 1080;
+            wrapper.appendChild(state.cvs);
+            state.init = true;
+
+            var t = 0;
+
+            setInterval(() => {
+                u(t);
+                t += step;
+                if (Math.random() < 0.01) {
+                    state.cvs.getContext("2d").clearRect(0, 0, 1920, 1080);
+                    state.idx = (state.idx + 1) % state.effects.length;
+                    state.fn = state.effects[state.idx];
+                }
+            }, 1000 / 60);
+
+            function u(t) {
+                if (state.render) {
+                    return;
+                }
+                state.render = true;
+                var c = state.cvs;
+                var x = c.getContext("2d");
+                eval(state.fn);
+                state.render = false;
+            }
+        };
+    </script>
+</body>
+</html>
