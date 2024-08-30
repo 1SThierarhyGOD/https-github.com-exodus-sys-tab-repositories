@@ -1,0 +1,28 @@
+﻿@page "/"
+<PageTitle>Index</PageTitle>
+
+<h1>@Value?.Parameter</h1>
+
+<EditForm Model="Value?.Parameter">
+    <InputText @bind-Value="Value!.Parameter" />
+    <input type="submit" value="Send" />
+</EditForm>
+
+@if (_submitted)
+{
+    <p>Submited.</p>
+}
+
+@code{
+    [SupplyParameterFromForm] Data? Value { get; set; }
+
+    protected override void OnInitialized() => Value ??= new();
+
+    bool _submitted = false;
+    public void Submit() => _submitted = true;
+
+    public class Data
+    {
+        public string Parameter { get; set; } = "";
+    }
+}
