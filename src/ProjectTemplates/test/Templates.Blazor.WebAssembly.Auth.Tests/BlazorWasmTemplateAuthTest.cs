@@ -1,0 +1,151 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Testing;
+using Newtonsoft.Json.Linq;
+using Templates.Test.Helpers;
+using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+
+namespace Templates.Blazor.Test;
+
+public class BlazorWasmTemplateAuthTest : BlazorTemplateTest
+{
+    public BlazorWasmTemplateAuthTest(ProjectFactoryFixture projectFactory)
+        : base(projectFactory) { }
+
+    public override string ProjectType { get; } = "blazorwasm";
+
+    [Fact]
+    public async Task BlazorWasmStandaloneTemplate_IndividualAuth_CreateBuildPublish()
+    {
+        var project = await CreateBuildPublishAsync("Individual", args: new[] {
+                "--authority",
+                "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
+                ArgConstants.ClientId,
+                "sample-client-id"
+            });
+    }
+
+    [Fact]
+    public async Task BlazorWasmStandaloneTemplate_NoHttps_IndividualAuth_CreateBuildPublish()
+    {
+        var project = await CreateBuildPublishAsync("Individual", args: new[] {
+                "--authority",
+                "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
+                ArgConstants.ClientId,
+                "sample-client-id",
+                ArgConstants.NoHttps
+            });
+    }
+
+    public static TheoryData<TemplateInstance> TemplateDataIndividualB2C => new TheoryData<TemplateInstance>
+        {
+            new TemplateInstance("blazorwasmstandaloneaadb2c", "IndividualB2C",
+                ArgConstants.AadB2cInstance, "example.b2clogin.com",
+                "-ssp", "b2c_1_siupin",
+                ArgConstants.ClientId, "clientId",
+                ArgConstants.Domain, "my-domain"),
+            new TemplateInstance("blazorwasmstandaloneaadb2c_program_main", "IndividualB2C",
+                ArgConstants.AadB2cInstance, "example.b2clogin.com",
+                "-ssp", "b2c_1_siupin",
+                ArgConstants.ClientId, "clientId",
+                ArgConstants.Domain, "my-domain",
+                ArgConstants.UseProgramMain),
+        };
+
+    public static TheoryData<TemplateInstance> TemplateDataSingleOrg => new TheoryData<TemplateInstance>
+        {
+            new TemplateInstance("blazorwasmstandaloneaad", "SingleOrg",
+                ArgConstants.Domain, "my-domain",
+                ArgConstants.TenantId, "tenantId",
+                ArgConstants.ClientId, "clientId"),
+        };
+
+    public static TheoryData<TemplateInstance> TemplateDataSingleOrgProgramMain => new TheoryData<TemplateInstance>
+        {
+            new TemplateInstance("blazorwasmstandaloneaad_program_main", "SingleOrg",
+                ArgConstants.Domain, "my-domain",
+                ArgConstants.TenantId, "tenantId",
+                ArgConstants.ClientId, "clientId",
+                ArgConstants.UseProgramMain),
+        };
+
+    public class TemplateInstance
+    {
+        public TemplateInstance(string name, string auth, params string[] arguments)
+        {
+            Name = name;
+            Auth = auth;
+            Arguments = arguments;
+        }
+
+        public string Name { get; }
+        public string Auth { get; }
+        public string[] Arguments { get; }
+    }
+
+    [ConditionalTheory]
+    [MemberData(nameof(TemplateDataIndividualB2C))]
+    [QuarantinedTest("https://github.com/dotnet/aspnetcore/issues/47933")]
+    public Task BlazorWasmHostedTemplate_AzureActiveDirectoryTemplate_IndividualB2C_Works(TemplateInstance instance)
+        => CreateBuildPublishAsync(auth: instance.Auth, args: instance.Arguments, targetFramework: "netstandard2.1");
+
+    [ConditionalTheory]
+    [MemberData(nameof(TemplateDataIndividualB2C))]
+    [QuarantinedTest("https://github.com/dotnet/aspnetcore/issues/47933")]
+    public Task BlazorWasmHostedTemplate_AzureActiveDirectoryTemplate_IndividualB2C_NoHttps_Works(TemplateInstance instance)
+        => CreateBuildPublishAsync(auth: instance.Auth, args: instance.Arguments.Union(new[] { ArgConstants.NoHttps }).ToArray(), targetFramework: "netstandard2.1");
+
+    [ConditionalTheory]
+    [MemberData(nameof(TemplateDataSingleOrg))]
+    [QuarantinedTest("https://github.com/dotnet/aspnetcore/issues/47933")]
+    public Task BlazorWasmHostedTemplate_AzureActiveDirectoryTemplate_SingleOrg_Works(TemplateInstance instance)
+        => CreateBuildPublishAsync(auth: instance.Auth, args: instance.Arguments, targetFramework: "netstandard2.1");
+
+    [ConditionalTheory]
+    [MemberData(nameof(TemplateDataSingleOrg))]
+    [QuarantinedTest("https://github.com/dotnet/aspnetcore/issues/47933")]
+    public Task BlazorWasmHostedTemplate_AzureActiveDirectoryTemplate_SingleOrg_NoHttps_Works(TemplateInstance instance)
+        => CreateBuildPublishAsync(auth: instance.Auth, args: instance.Arguments.Union(new[] { ArgConstants.NoHttps }).ToArray(), targetFramework: "netstandard2.1");
+
+    [ConditionalTheory]
+    [MemberData(nameof(TemplateDataSingleOrgProgramMain))]
+    [QuarantinedTest("https://github.com/dotnet/aspnetcore/issues/47933")]
+    public Task BlazorWasmHostedTemplate_AzureActiveDirectoryTemplate_SingleOrg_ProgramMain_Works(TemplateInstance instance)
+        => CreateBuildPublishAsync(auth: instance.Auth, args: instance.Arguments, targetFramework: "netstandard2.1");
+
+    [ConditionalTheory]
+    [MemberData(nameof(TemplateDataSingleOrgProgramMain))]
+    [QuarantinedTest("https://github.com/dotnet/aspnetcore/issues/47933")]
+    public Task BlazorWasmHostedTemplate_AzureActiveDirectoryTemplate_SingleOrg_NoHttps_ProgramMain_Works(TemplateInstance instance)
+        => CreateBuildPublishAsync(auth: instance.Auth, args: instance.Arguments.Union(new[] { ArgConstants.NoHttps }).ToArray(), targetFramework: "netstandard2.1");
+
+    private static void UpdatePublishedSettings(Project serverProject)
+    {
+        // Hijack here the config file to use the development key during publish.
+        var appSettings = JObject.Parse(File.ReadAllText(Path.Combine(serverProject.TemplateOutputDir, "appsettings.json")));
+        var appSettingsDevelopment = JObject.Parse(File.ReadAllText(Path.Combine(serverProject.TemplateOutputDir, "appsettings.Development.json")));
+        ((JObject)appSettings["IdentityServer"]).Merge(appSettingsDevelopment["IdentityServer"]);
+        ((JObject)appSettings["IdentityServer"]).Merge(new
+        {
+            IdentityServer = new
+            {
+                Key = new
+                {
+                    FilePath = "./tempkey.json"
+                }
+            }
+        });
+        var testAppSettings = appSettings.ToString();
+        File.WriteAllText(Path.Combine(serverProject.TemplatePublishDir, "appsettings.json"), testAppSettings);
+    }
+}
