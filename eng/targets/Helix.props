@@ -1,0 +1,25 @@
+<Project>
+  <Import Project="Helix.Common.props" />
+
+  <ItemDefinitionGroup>
+    <HelixContent>
+      <CopyToBuildDirectory>Never</CopyToBuildDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </HelixContent>
+  </ItemDefinitionGroup>
+
+  <PropertyGroup>
+    <HelixTimeout>00:30:00</HelixTimeout>
+    <HelixTestName>$(MSBuildProjectName)--$(TargetFramework)</HelixTestName>
+    <LoggingTestingDisableFileLogging Condition="'$(IsHelixJob)' == 'true'">false</LoggingTestingDisableFileLogging>
+    <NodeVersion>16.11.0</NodeVersion>
+
+    <!-- Have all tests depend on the latest runtimes until we get a net7.0 SDK -->
+    <TestDependsOnAspNetPackages>true</TestDependsOnAspNetPackages>
+    <TestDependsOnAspNetRuntime>true</TestDependsOnAspNetRuntime>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <HelixContent Include="$(RepoRoot)eng\helix\content\**\*" Exclude="$(RepoRoot)eng\helix\content\*.in" />
+  </ItemGroup>
+</Project>
