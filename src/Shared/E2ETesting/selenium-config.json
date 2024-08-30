@@ -1,0 +1,8 @@
+{
+  "drivers": {
+    "chrome": {
+      "version" : "109.0.5414.74"
+    }
+  },
+  "ignoreExtraDrivers": true
+}
