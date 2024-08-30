@@ -1,0 +1,64 @@
+﻿@page "/"
+@using System.ComponentModel.DataAnnotations;
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<EditForm Model="Customer" OnValidSubmit="AddCustomer" novalidate>
+    <DataAnnotationsValidator />
+
+    <div>
+        <ValidationSummary />
+    </div>
+
+    <div>
+        <label for="Name">Name</label>
+        <InputText @bind-Value="Customer.Name" />
+        <ValidationMessage For="() => Customer.Name" />
+    </div>
+
+    <div>
+        <label for="Age">Age</label>
+        <input type="text" name="Age" value="@Customer.Age" />
+        <ValidationMessage For="() => Customer.Age" />
+    </div>
+    <div>
+        <input type="submit" value="Add Customer" />
+    </div>
+</EditForm>
+
+@if (_customerAdded)
+{
+    <p>Customer @Customer.Name added.</p>
+}
+
+@code {
+
+    private bool _customerAdded;
+    [SupplyParameterFromForm] public CustomerDto Customer { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Customer ??= new CustomerDto();
+    }
+
+    public void AddCustomer()
+    {
+        _customerAdded = true;
+    }
+
+    public class CustomerDto
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public string? Name { get; set; }
+
+        public int Age { get; set; }
+    }
+}
