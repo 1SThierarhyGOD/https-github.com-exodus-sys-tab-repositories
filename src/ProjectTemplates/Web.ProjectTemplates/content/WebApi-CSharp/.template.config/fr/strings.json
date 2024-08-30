@@ -1,0 +1,11 @@
+﻿{
+  "version": "1.0.0.0",
+  "strings": {
+    "name": "API web ASP.NET Core",
+    "description": "A project template for creating a RESTful Web API using ASP.NET Core controllers or minimal APIs, with optional support for OpenAPI and authentication.",
+    "parameter.DisableOpenAPI.name": "Activer la prise en charge d'_OpenAPI",
+    "parameter.DisableOpenAPI.description": "Active la prise en charge d'OpenAPI (Swagger)",
+    "parameter.UseMinimalAPIs.name": "Use controllers",
+    "parameter.UseMinimalAPIs.description": "Use controllers instead of minimal APIs."
+  }
+}
